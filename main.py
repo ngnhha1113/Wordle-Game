@@ -131,7 +131,21 @@ class Wordle:
                 b.bind("<Leave>", lambda e: off_hover(e, self.BG))
             index += 1
             step = 10
+        solve_frame = tk.Frame(self.root, bg=self.BG)
+        solve_frame.pack(pady=15)
 
+        self.solve_button = tk.Button(
+            solve_frame,
+            text="Solve",
+            font="cambria 18 bold",
+            fg="#00eaff",
+            bg="#202020",
+            padx=20,
+            pady=5,
+            cursor="hand2",
+            command=self.solve  # gọi phương thức solve() trong Wordle
+        )
+        self.solve_button.pack()
         self.status_bar = tk.Label(self.root, text=f"Score : {self.score}",font="cambria 10 bold",
                                    anchor="w",padx=10,background="#242424",fg="white")
         self.status_bar.pack(fill='x', side="bottom")
@@ -204,7 +218,7 @@ class Wordle:
                 self.buttons[self.current_B_row][self.current_b]["text"] = key_press['text']
                 self.guess += key_press['text']
                 self.current_b += 1
-
+    
     def erase_character(self):
         if self.current_b > 0:
             self.current_b -= 1
@@ -407,6 +421,19 @@ class Wordle:
             self.word_api = words_api.Words(self.word_size)
 
             connection.close()
+    def solve(self):
+        print("Running solver method:", self.solve_method)
+
+        if self.solve_method == "BFS":
+            self.solve_bfs()
+        elif self.solve_method == "DFS":
+            self.solve_dfs()
+        elif self.solve_method == "UCS":
+            self.solve_ucs()
+        elif self.solve_method == "A*":
+            self.solve_astar()
+        else:
+            print("Unknown solve method!")
 
     def update_high_score(self):
         connection = sqlite3.connect("settings.db")
