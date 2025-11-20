@@ -5,7 +5,7 @@ import words_api
 import settings as st
 import os
 import sqlite3
-
+from astar import AStarSolver
 ctypes.windll.shcore.SetProcessDpiAwareness(1)
 
 
@@ -477,6 +477,40 @@ class Wordle:
     def off_hover(self, e):
         widget = e.widget
         widget["image"] = self.setting
+    def solve_astar(self):
+        
+
+        solver = AStarSolver(self.word_api)
+        solution = solver.solve()
+
+        print("A* Solution:", solution)
+
+        # reset GUI
+        self.reset()
+
+        # tự động điền từng bước giải
+        for step, word in enumerate(solution):
+            if step >= 6:
+                break
+
+            # ghi chữ lên dòng step
+            for i in range(self.word_size):
+                self.buttons[step][i]["text"] = word[i]
+
+            # tạo pattern
+            fb = solver.feedback(word, self.word_api.word)
+
+            # tô màu
+            for i, f in enumerate(fb):
+                if f == "G":
+                    self.buttons[step][i].config(bg="green")
+                elif f == "Y":
+                    self.buttons[step][i].config(bg="#d0d925")
+                else:
+                    self.buttons[step][i].config(bg="#4d4a4a")
+
+            self.root.update()
+            self.root.after(500)  # delay cho từng bước đẹp hơn
 
 
 def on_hover(e, color):

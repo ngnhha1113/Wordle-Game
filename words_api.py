@@ -24,7 +24,8 @@ class Words:
         with open(f"word_files/{file_name}.txt", 'r') as file:
             self.words_list = file.readlines()
 
-        self.words_list = [word.strip('\n') for word in self.words_list]
+        self.words_list = [word.strip().upper() for word in self.words_list]
+
 
     def is_at_right_position(self, i, char):
         if self.word[i] == char:
