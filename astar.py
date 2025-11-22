@@ -29,13 +29,28 @@ class AStarSolver:
         self.expanded_nodes_list = []
     # ------------------------ Heuristic ------------------------
     def heuristic(self, w):
-        # mismatch positions
-        mismatch = sum(w[i] != self.target[i] for i in range(self.N))
-        # extra letters not in target
+    
+        mismatch = 0
+        for i in range(self.N):
+            if w[i] != self.target[i]:
+                mismatch += 1  # chữ sai vị trí → penalty
+
+    # Count letters
         wc = Counter(w)
         tc = Counter(self.target)
+
+    # Penalty cho chữ không thuộc target
         extra = sum(wc[ch] for ch in wc if ch not in tc)
-        return mismatch + extra
+
+    # Penalty chênh lệch tần suất
+    # (vd target có 2 chữ L nhưng word có 0)
+        freq_mismatch = 0
+        for ch in set(wc.keys()).union(tc.keys()):
+            freq_mismatch += abs(wc[ch] - tc[ch])
+
+        # Weighting
+        return mismatch * 2 + extra * 3 + freq_mismatch
+
 
     # ------------------------ Feedback ------------------------
     def feedback(self, guess, target):
